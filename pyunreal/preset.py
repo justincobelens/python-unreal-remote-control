@@ -109,7 +109,11 @@ class PresetBase(Command):
         return funcs
 
     async def refresh(self):
-        await self._setup_preset()
+        try:
+            await self._setup_preset()
+        except Exception as e:
+            logger.error(f"Failed to refresh preset: {e}")
+            raise
 
 
 # TODO: change to .get(key, []) to prevent error from empty or missing keys/values

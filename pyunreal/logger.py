@@ -1,6 +1,6 @@
 import logging
 
-logging.getLogger("pyunreal").setLevel(logging.INFO)
+logging.getLogger("pyunreal").setLevel(logging.DEBUG)
 
 class UnrealLogging:
     PACKAGE_NAME = "pyunreal"
@@ -37,4 +37,15 @@ class UnrealLogging:
     @classmethod
     def enable(cls, level=logging.DEBUG):
         logging.getLogger(cls.PACKAGE_NAME).setLevel(level)
+
+    @classmethod
+    def set_level(cls, level):
+        """
+        Set the logging level.
+
+        The level parameter should be a string that specifies the desired logging level ('DEBUG', 'INFO', 'WARNING', 'ERROR', or 'CRITICAL').
+        """
+        levels = {'DEBUG': logging.DEBUG, 'INFO': logging.INFO, 'WARNING': logging.WARNING, 'ERROR': logging.ERROR,
+                  'CRITICAL': logging.CRITICAL}
+        logging.getLogger(cls.PACKAGE_NAME).setLevel(levels.get(level.upper(), cls.DEFAULT_LEVEL))
 

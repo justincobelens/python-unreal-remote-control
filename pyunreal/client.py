@@ -10,17 +10,15 @@ class Client(Host):
     def __init__(self, host=DEFAULT_HOST, port=DEFAULT_PORT_WEBSOCKET):
         self.host = host
         self.port = port
-        self.conn = None
+        self.conn = Connection.get_instance()
 
-    async def create_connection(self, timeout=None):
-        self.conn = Connection(self.host, self.port, timeout)
-        await self.conn.connect()
+    async def create_connection(self, timeout=DEFAULT_TIMEOUT):
+        if self.conn.websocket is None:
+            await self.conn.connect()
         return self.conn
 
     async def close_connection(self):
-        if self.conn is not None:
-            await self.conn.close()
-            self.conn = None
+        await self.conn.close()
 
     async def preset(self, name):
         presets = await self.presets()

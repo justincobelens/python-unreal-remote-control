@@ -6,18 +6,13 @@ logger = UnrealLogging.get_logger(__name__)
 
 
 class Host(Command):
-    # TODO: Shouldn't be a context manager with creating connections
-    #       it will open and close connection too oftne
-
     async def _execute_cmd(self, cmd, with_response=True):
-        logger.debug("Host execute command")
-        async with await self.create_connection() as conn:
-            await conn.send(cmd)
-            if with_response:
-                result = await conn.receive()
-                return result
-            # else:
-            # await conn.check_status()
+        conn = await self.create_connection()
+        # logger.debug("Host execute command")
+        await conn.send(cmd)
+        if with_response:
+            result = await conn.receive()
+            return result
 
     async def info(self):
         cmd = {
