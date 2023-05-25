@@ -1,3 +1,4 @@
+from config import VERSION
 from pyunreal.preset import Preset
 from pyunreal.command import Command
 from pyunreal.logger import UnrealLogging
@@ -52,10 +53,8 @@ class Host(Command):
 
         return presets
 
-
-
     def version(self):
-        return 1
+        return VERSION
 
     def remote_connect(self, host, port):
         return NotImplementedError

@@ -13,10 +13,27 @@ class PresetProperty:
     metadata: dict
     owners: list
     preset_name: str
-    group: str = '1'
+    group: str
+    client: any
 
-    def value(self):
-        raise NotImplementedError
+    async def value(self):
+        cmd = {
+            "MessageName": "http",
+            "Parameters": {
+                "Url": f"/remote/preset/{self.preset_name}/property/{self.display_name}",
+                "Verb": "GET"
+            }}
+        result = await self.client._execute_cmd(cmd)
+        return result['ResponseBody']['PropertyValues'][0]['PropertyValue']
 
-    def set(self, **kwargs):
-        raise NotImplementedError
+    async def set(self, **kwargs):
+        cmd = {
+            "MessageName": "http",
+            "Parameters": {
+                "Url": f"/remote/preset/{self.preset_name}/property/{self.display_name}",
+                "Verb": "PUT",
+                "Body": {
+                    "PropertyValue": kwargs
+                }
+            }}
+        await self.client._execute_cmd(cmd)

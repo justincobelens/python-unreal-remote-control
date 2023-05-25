@@ -1,7 +1,6 @@
 from typing import List, Dict
 from dataclasses import dataclass
 
-from pyunreal.command import Command
 from pyunreal.plugins.preset.property import PresetProperty
 from pyunreal.plugins.preset.function import PresetFunction
 from pyunreal.plugins.preset.group import PresetGroup
@@ -11,11 +10,9 @@ from pyunreal.logger import UnrealLogging
 
 logger = UnrealLogging.get_logger(__name__)
 
-# TODO: change to .get(key, []) to prevent error from empty or missing keys/values
-
 
 @dataclass
-class PresetBase(Command):
+class PresetBase:
     client: any
     name: str
     ID: str
@@ -38,6 +35,7 @@ class PresetBase(Command):
 
         self._groups = await self._init_group_list()
         self._actors = await self._init_actor_list()
+        self._properties = await self._init_property_list()
 
     async def _init_property(self, group: str, info: dict) -> PresetProperty:
         prop = PresetProperty(info['ID'],
@@ -46,7 +44,8 @@ class PresetBase(Command):
                               info['Metadata'],
                               info['OwnerObjects'],
                               self.name,
-                              group)
+                              group,
+                              self.client)
         return prop
 
     async def _init_function(self, group: str, info: dict) -> PresetFunction:
@@ -87,23 +86,23 @@ class PresetBase(Command):
 
     async def _init_actor_list(self):
         actors = {}
-        for group in self._preset_info['Preset']['Groups']:
-            for actor in group['ExposedActors']:
+        for group in self._preset_info['Preset'].get('Groups', []):
+            for actor in group.get('ExposedActors', []):
                 actors[actor['DisplayName']] = await self._init_actor(group['Name'], actor)
         return actors
 
     async def _init_property_list(self):
         properties = {}
-        for group in self._preset_info['Preset']['Groups']:
-            for prop in group['ExposedProperties']:
+        for group in self._preset_info['Preset'].get('Groups', []):
+            for prop in group.get('ExposedProperties', []):
                 prop = await self._init_property(group, prop)
                 properties[prop.display_name] = prop
         return properties
 
     async def _init_func_dict(self):
         funcs = {}
-        for group in self._preset_info['Preset']['Groups']:
-            for func in group['ExposedFunctions']:
+        for group in self._preset_info['Preset'].get('Groups', []):
+            for func in group.get('ExposedFunctions', []):
                 func = await self._init_function(group['Name'], func)
                 funcs[func.display_name] = func
         return funcs
@@ -116,15 +115,23 @@ class PresetBase(Command):
             raise
 
 
-# TODO: change to .get(key, []) to prevent error from empty or missing keys/values
-
 @dataclass
 class Preset(PresetBase):
+    """
+    Class representing a Preset in the Unreal Engine.
+    """
 
     async def get_metadata(self):
+        """
+        Method to get metadata of the preset.
+        Currently not implemented.
+        """
         raise NotImplementedError
 
     async def get_all_groups(self) -> Dict[str, PresetGroup]:
+        """
+        Method to get all groups in the preset.
+        """
         return self._groups
 
     async def get_group(self, group_name: str) -> PresetGroup:
@@ -138,11 +145,16 @@ class Preset(PresetBase):
         actors = await self.get_all_actors()
         return actors[actor_name]
 
-    def get_all_property_names(self) -> List[str]:
-        raise NotImplementedError
+    # TODO: Properties have to be stored somewhere, so it doesn't need to call and calculate every time
+    async def get_all_properties_names(self) -> List[str]:
+        """
+        Get all property names in a preset.
+        """
+        return [prop for prop in self._properties]
 
-    def get_property(self, property_name: str) -> PresetProperty:
-        raise NotImplementedError
+    async def get_property(self, property_name: str) -> PresetProperty:
+        return self._properties.get(property_name, [])
+
 
     def get_all_function_name(self) -> List[str]:
         raise NotImplementedError
