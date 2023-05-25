@@ -1,3 +1,6 @@
+import asyncio
+
 class Command:
-    def create_connection(self, *args, **kwargs):
+    async def create_connection(self, *args, **kwargs):
         return None
+

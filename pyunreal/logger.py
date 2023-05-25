@@ -7,7 +7,7 @@ class UnrealLogging:
     DEFAULT_FORMAT = logging.Formatter(
         fmt='%(asctime)s,%(msecs)d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
         datefmt='%d-%m-%Y:%H:%M:%S')
-    DEFAULT_LEVEL = logging.DEBUG
+    DEFAULT_LEVEL = logging.CRITICAL
 
     @classmethod
     def get_logger(cls, name):
@@ -15,7 +15,13 @@ class UnrealLogging:
             raise RuntimeError("The package logger name should be 'pyunreal.xxx.xxx' but {}".format(name))
 
         logger = logging.getLogger(name)
-        if logger.handlers:
+
+        # check if the logger already has handlers attached to it. If not, add a new StreamHandler
+        if not logger.handlers:
+            console_handler = logging.StreamHandler()
+            console_handler.setFormatter(cls.DEFAULT_FORMAT)
+            logger.addHandler(console_handler)
+        else:
             logger.handlers[0].setFormatter(cls.DEFAULT_FORMAT)
 
         return logger
@@ -31,3 +37,4 @@ class UnrealLogging:
     @classmethod
     def enable(cls, level=logging.DEBUG):
         logging.getLogger(cls.PACKAGE_NAME).setLevel(level)
+
