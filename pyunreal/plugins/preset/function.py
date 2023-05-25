@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-from pyunreal.command import Command
 from pyunreal.logger import UnrealLogging
 
 logger = UnrealLogging.get_logger(__name__)

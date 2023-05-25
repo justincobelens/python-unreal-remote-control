@@ -1,4 +1,3 @@
-import json
 import asyncio
 import websockets
 
@@ -10,6 +9,8 @@ logger = UnrealLogging.get_logger(__name__)
 
 
 class Connection:
+    _instance = None
+
     def __init__(self, host: str = DEFAULT_HOST, port: int = DEFAULT_PORT_WEBSOCKET, timeout=None):
         self.host = host
         self.port = port

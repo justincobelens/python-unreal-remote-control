@@ -10,7 +10,7 @@ class Host(Command):
     #       it will open and close connection too oftne
 
     async def _execute_cmd(self, cmd, with_response=True):
-        # logger.debug("Host execute command")
+        logger.debug("Host execute command")
         async with await self.create_connection() as conn:
             await conn.send(cmd)
             if with_response:
@@ -56,6 +56,8 @@ class Host(Command):
             logger.info(f"No presets found")
 
         return presets
+
+
 
     def version(self):
         return 1

@@ -1,6 +1,6 @@
 import logging
 
-logging.getLogger("pyunreal").setLevel(logging.DEBUG)
+logging.getLogger("pyunreal").setLevel(logging.INFO)
 
 class UnrealLogging:
     PACKAGE_NAME = "pyunreal"

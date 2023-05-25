@@ -1,6 +1,6 @@
 from logger import UnrealLogging
 
-UnrealLogging.enable()
+# UnrealLogging.enable()
 
 DEFAULT_HOST = "127.0.0.1"
 DEFAULT_PORT_HTTP = 30010
